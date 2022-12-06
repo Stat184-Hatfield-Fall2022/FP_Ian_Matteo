@@ -1,0 +1,230 @@
+---
+title: "NBA Player Features"
+author: "Ian and Matteo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(tinytex)
+library(latexpdf)
+library(readr)
+library(tidyr)
+library(rvest)
+library(devtools)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+
+The question we are trying to answer is what physical features about a player in the NBA effect their average points per game.
+
+First code chunk is getting a list of all the players in the NBA, because the website we are scraping from cant fit all the players on one page, we need to get three different tables and then combine them for the full table.
+
+```{r Scraping All Players Table}
+## Web Scraping ----
+
+#Every player in the nba 
+fullRoster <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/1/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers <- fullRoster[[7]]
+
+fullRoster2 <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/2/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers2 <- fullRoster2[[7]]
+
+allPlayersFinal <- rbind(allPlayers, allPlayers2)
+
+fullRoster3 <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/3/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers3 <- fullRoster3[[7]]
+
+allPlayersFinal <- rbind(allPlayersFinal, allPlayers3)
+```
+
+For our question, we now need data about the players physical features. The only website where we found this informatin, lists it for each combine year. This means that to get all the players, we need to select each combine seacon and scrape the table individually. Also because the website is dynamically written, to scrape the data we need to first save the website and then provide the location of the saved website in our computer as the html. We started at the 2008-2009 combine because the years prior dont have as many current NBA players. After we scraped all the years we combined them into one dataframe.
+
+
+```{r Scraping combine players}
+#Player Body Measurement data starting with 2008-2009 draft
+combine89 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\89.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine89T <- combine89[[1]]
+
+combine910 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\910.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine910T <- combine910[[1]]
+
+combineFinal <- rbind(combine89T, combine910T)
+
+combine1011 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1011.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1011T <- combine1011[[1]]
+
+combineFinal <- rbind(combineFinal, combine1011T)
+
+combine1112 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1112.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1112T <- combine1112[[1]]
+
+combineFinal <- rbind(combineFinal, combine1112T)
+
+combine1213 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1213.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1213T <- combine1213[[1]]
+
+combineFinal <- rbind(combineFinal, combine1213T)
+
+combine1314 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1314.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1314T <- combine1314[[1]]
+
+combineFinal <- rbind(combineFinal, combine1314T)
+
+combine1415 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1415.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1415T <- combine1415[[1]]
+
+combineFinal <- rbind(combineFinal, combine1415T)
+
+combine1516 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1516.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1516T <- combine1516[[1]]
+
+combineFinal <- rbind(combineFinal, combine1516T)
+
+combine1617 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1617.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1617T <- combine1617[[1]]
+
+combineFinal <- rbind(combineFinal, combine1617T)
+
+combine1718 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1718.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1718T <- combine1718[[1]]
+
+combineFinal <- rbind(combineFinal, combine1718T)
+
+combine1819 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1819.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1819T <- combine1819[[1]]
+
+combineFinal <- rbind(combineFinal, combine1819T)
+
+combine1920 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\1920.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1920T <- combine1920[[1]]
+
+combineFinal <- rbind(combineFinal, combine1920T)
+
+combine2021 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\2021.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2021T <- combine2021[[1]]
+
+combineFinal <- rbind(combineFinal, combine2021T)
+
+combine2122 <- read_html(
+  x = "C:\\Users\\Ian Munoz\\Documents\\2122.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2122T <- combine2122[[1]]
+
+combineFinal <- rbind(combineFinal, combine2122T)
+
+```
+
+Now we inner join our combine data and our NBA current player data by the name attribute because there are many players that were recorded in the combine who don't play in the NBA. TO get rid of these players we just inner join by name for both datasets so any player whose names aren't present in both datasets wont be added.
+
+```{r Join}
+FinalTable <- inner_join(
+  x = allPlayersFinal,
+  y = combineFinal,
+  by = c("Player" = "PLAYER")
+)
+```
+
+Gets rid of the percent sign in the body fat column and creates a new column and then deletes the old one
+```{r wrangling}
+FinalTable1 <- FinalTable %>%
+  mutate(
+    BodyFatPercent = parse_number(`BODY FAT %`)
+  )
+
+FinalTable <- subset (FinalTable, select = -c(`BODY FAT %`))
+```
+
+
+```{r}
+esquisser(FinalTable)
+```
+
