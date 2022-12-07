@@ -20,7 +20,6 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
-
 The question we are trying to answer is what physical features about a player in the NBA effect their average points per game.
 
 First code chunk is getting a list of all the players in the NBA, because the website we are scraping from cant fit all the players on one page, we need to get three different tables and then combine them for the full table.
@@ -29,37 +28,40 @@ First code chunk is getting a list of all the players in the NBA, because the we
 ## Web Scraping ----
 
 #Every player in the nba 
-fullRoster <- read_html(
+fullRoster1 <- read_html(
   x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/1/Regular_Season"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers <- fullRoster[[7]]
+allPlayers1 <- fullRoster1[[13]]
 
+#second page
 fullRoster2 <- read_html(
   x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/2/Regular_Season"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers2 <- fullRoster2[[7]]
+allPlayers2 <- fullRoster2[[13]]
 
-allPlayersFinal <- rbind(allPlayers, allPlayers2)
-
+#third page 
 fullRoster3 <- read_html(
   x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/3/Regular_Season"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers3 <- fullRoster3[[7]]
+allPlayers3 <- fullRoster3[[13]]
 
-allPlayersFinal <- rbind(allPlayersFinal, allPlayers3)
+# merge player tables one and two
+allPlayersFinal <- rbind(allPlayers1, allPlayers2)
+
+# merge table one and two with the third
+allPlayersFinal1 <- rbind(allPlayersFinal, allPlayers3)
 ```
 
-For our question, we now need data about the players physical features. The only website where we found this informatin, lists it for each combine year. This means that to get all the players, we need to select each combine seacon and scrape the table individually. Also because the website is dynamically written, to scrape the data we need to first save the website and then provide the location of the saved website in our computer as the html. We started at the 2008-2009 combine because the years prior dont have as many current NBA players. After we scraped all the years we combined them into one dataframe.
-
+For our question, we now need data about the players physical features. The only website where we found this information, lists it for each combine year. This means that to get all the players, we need to select each combine season and scrape the table individually. Also because the website is dynamically written, to scrape the data we need to first save the website and then provide the location of the saved website in our computer as the html. We started at the 2008-2009 combine because the years prior dont have as many current NBA players. After we scraped all the years we combined them into one dataframe.
 
 ```{r Scraping combine players}
 #Player Body Measurement data starting with 2008-2009 draft
@@ -214,6 +216,7 @@ FinalTable <- inner_join(
 ```
 
 Gets rid of the percent sign in the body fat column and creates a new column and then deletes the old one
+
 ```{r wrangling}
 FinalTable1 <- FinalTable %>%
   mutate(
@@ -223,8 +226,6 @@ FinalTable1 <- FinalTable %>%
 FinalTable <- subset (FinalTable, select = -c(`BODY FAT %`))
 ```
 
-
 ```{r}
 esquisser(FinalTable)
 ```
-
