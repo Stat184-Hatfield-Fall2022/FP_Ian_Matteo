@@ -16,8 +16,11 @@ library(readr)
 library(tidyr)
 library(rvest)
 library(devtools)
-knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  fig.align = 'center'
+)
 ```
 
 The question we are trying to answer is what physical features about a player in the NBA effect their average points per game.
@@ -34,7 +37,7 @@ fullRoster1 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers1 <- fullRoster1[[13]]
+allPlayers1 <- fullRoster1[[7]]
 
 #second page
 fullRoster2 <- read_html(
@@ -43,7 +46,7 @@ fullRoster2 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers2 <- fullRoster2[[13]]
+allPlayers2 <- fullRoster2[[7]]
 
 #third page 
 fullRoster3 <- read_html(
@@ -52,39 +55,100 @@ fullRoster3 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers3 <- fullRoster3[[13]]
+allPlayers3 <- fullRoster3[[7]]
 
 # merge player tables one and two
 allPlayersFinal <- rbind(allPlayers1, allPlayers2)
 
 # merge table one and two with the third
-allPlayersFinal1 <- rbind(allPlayersFinal, allPlayers3)
+allPlayersFinal <- rbind(allPlayersFinal, allPlayers3)
 ```
 
-For our question, we now need data about the players physical features. The only website where we found this information, lists it for each combine year. This means that to get all the players, we need to select each combine season and scrape the table individually. Also because the website is dynamically written, to scrape the data we need to first save the website and then provide the location of the saved website in our computer as the html. We started at the 2008-2009 combine because the years prior dont have as many current NBA players. After we scraped all the years we combined them into one dataframe.
+For our question, we now need data about the players physical features. The only website where we found this information, lists it for each combine year. This means that to get all the players, we need to select each combine season and scrape the table individually. Also because the website is dynamically written, to scrape the data we need to first save the website and then provide the location of the saved website in our computer as the html. We started at the 2008-2009 combine because the years prior do not have as many current NBA players. After we scraped all the years we combined them into one data frame.
 
 ```{r Scraping combine players}
 #Player Body Measurement data starting with 2008-2009 draft
+#Player Body Measurement data from 2003 - 2023
+
+#2003 - 2004
+combine34 <- read_html(
+  x = "34.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine34T <- combine34[[1]]
+
+#2004 - 2005
+combine45 <- read_html(
+  x = "45.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine45T <- combine45[[1]]
+
+combineFinal <- rbind(combine34T, combine45T)
+
+#2005 - 2006
+combine56 <- read_html(
+  x = "56.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine56T <- combine56[[1]]
+
+combineFinal <- rbind(combineFinal, combine56T)
+
+#2006 - 2007
+combine67 <- read_html(
+  x = "67.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine67T <- combine67[[1]]
+
+combineFinal <- rbind(combineFinal, combine67T)
+
+#2007 - 2008
+combine78 <- read_html(
+  x = "78.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine78T <- combine78[[1]]
+
+combineFinal <- rbind(combineFinal, combine78T)
+
+# 2008 - 2009 
 combine89 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\89.html"
+  x = "89.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
 combine89T <- combine89[[1]]
 
+combineFinal <- rbind(combineFinal, combine89T)
+
+
+# 2009 - 2010
 combine910 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\910.html"
+  x = "910.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
 combine910T <- combine910[[1]]
 
-combineFinal <- rbind(combine89T, combine910T)
+combineFinal <- rbind(combineFinal, combine910T)
 
+#2010 - 2011
 combine1011 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1011.html"
+  x = "1011.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -93,8 +157,9 @@ combine1011T <- combine1011[[1]]
 
 combineFinal <- rbind(combineFinal, combine1011T)
 
+#2011 - 2012
 combine1112 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1112.html"
+  x = "1112.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -103,8 +168,9 @@ combine1112T <- combine1112[[1]]
 
 combineFinal <- rbind(combineFinal, combine1112T)
 
+# 2012 - 2013
 combine1213 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1213.html"
+  x = "1213.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -113,8 +179,9 @@ combine1213T <- combine1213[[1]]
 
 combineFinal <- rbind(combineFinal, combine1213T)
 
+#2013 - 2014
 combine1314 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1314.html"
+  x = "1314.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -123,8 +190,9 @@ combine1314T <- combine1314[[1]]
 
 combineFinal <- rbind(combineFinal, combine1314T)
 
+#2014 - 2015
 combine1415 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1415.html"
+  x = "1415.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -133,8 +201,9 @@ combine1415T <- combine1415[[1]]
 
 combineFinal <- rbind(combineFinal, combine1415T)
 
+#2015-2016
 combine1516 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1516.html"
+  x = "1516.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -143,8 +212,9 @@ combine1516T <- combine1516[[1]]
 
 combineFinal <- rbind(combineFinal, combine1516T)
 
+#2016 - 2017
 combine1617 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1617.html"
+  x = "1617.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -153,8 +223,9 @@ combine1617T <- combine1617[[1]]
 
 combineFinal <- rbind(combineFinal, combine1617T)
 
+#2017 - 2018
 combine1718 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1718.html"
+  x = "1718.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -163,8 +234,9 @@ combine1718T <- combine1718[[1]]
 
 combineFinal <- rbind(combineFinal, combine1718T)
 
+# 2018 - 2019
 combine1819 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1819.html"
+  x = "1819.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -173,8 +245,9 @@ combine1819T <- combine1819[[1]]
 
 combineFinal <- rbind(combineFinal, combine1819T)
 
+#2019 - 2020
 combine1920 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\1920.html"
+  x = "1920.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -183,8 +256,9 @@ combine1920T <- combine1920[[1]]
 
 combineFinal <- rbind(combineFinal, combine1920T)
 
+# 2020 - 2021
 combine2021 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\2021.html"
+  x = "2021.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
@@ -193,13 +267,25 @@ combine2021T <- combine2021[[1]]
 
 combineFinal <- rbind(combineFinal, combine2021T)
 
+#2021 - 2022
 combine2122 <- read_html(
-  x = "C:\\Users\\Ian Munoz\\Documents\\2122.html"
+  x = "2122.html"
 ) %>%
   html_elements(css = "table") %>%
   html_table()
 
 combine2122T <- combine2122[[1]]
+
+combineFinal <- rbind(combineFinal, combine2122T)
+
+#2022 - 2023
+combine2223 <- read_html(
+  x = "2223.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2223T <- combine2223[[1]]
 
 combineFinal <- rbind(combineFinal, combine2122T)
 
