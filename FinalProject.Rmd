@@ -37,7 +37,7 @@ fullRoster1 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers1 <- fullRoster1[[7]]
+allPlayers1 <- fullRoster1[[13]]
 
 #second page
 fullRoster2 <- read_html(
@@ -46,7 +46,7 @@ fullRoster2 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers2 <- fullRoster2[[7]]
+allPlayers2 <- fullRoster2[[13]]
 
 #third page 
 fullRoster3 <- read_html(
@@ -55,7 +55,7 @@ fullRoster3 <- read_html(
   html_elements(css = "table") %>%
   html_table()
 
-allPlayers3 <- fullRoster3[[7]]
+allPlayers3 <- fullRoster3[[13]]
 
 # merge player tables one and two
 allPlayersFinal <- rbind(allPlayers1, allPlayers2)
@@ -287,7 +287,7 @@ combine2223 <- read_html(
 
 combine2223T <- combine2223[[1]]
 
-combineFinal <- rbind(combineFinal, combine2122T)
+combineFinal <- rbind(combineFinal, combine2223T)
 
 ```
 
@@ -299,19 +299,113 @@ FinalTable <- inner_join(
   y = combineFinal,
   by = c("Player" = "PLAYER")
 )
+
+RookieTable <- inner_join(
+  x = allPlayersFinal,
+  y = combine2223T,
+  by = c("Player" = "PLAYER")
+)
 ```
 
 Gets rid of the percent sign in the body fat column and creates a new column and then deletes the old one
 
 ```{r wrangling}
-FinalTable1 <- FinalTable %>%
-  mutate(
-    BodyFatPercent = parse_number(`BODY FAT %`)
-  )
+FinalTable <- FinalTable %>% mutate(`STANDING REACH` = parse_number (`STANDING REACH`))
 
-FinalTable <- subset (FinalTable, select = -c(`BODY FAT %`))
+FinalTable <- FinalTable %>% mutate(`HAND LENGTH (inches)` = parse_number(`HAND LENGTH (inches)`))
+
+FinalTable <- FinalTable %>% mutate(`HAND WIDTH (inches)` = parse_number(`HAND WIDTH (inches)`))
+
+FinalTable <- FinalTable %>% mutate(`HEIGHT W/O SHOES` = parse_number(`HEIGHT W/O SHOES`))
+
+
 ```
 
-```{r}
-esquisser(FinalTable)
+```{r visuals}
+
+#wingspan
+wingspan <- FinalTable %>%
+ filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
+ ggplot() +
+  aes(x = BPG, y = WINGSPAN, fill = POS) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  labs(
+    title = "Wingspan VS Blocks per game (BPG)",
+    fill = "Position"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    limits = c(0, 2))
+
+
+
+# Standing reach
+standingreach <- FinalTable %>%
+  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
+  ggplot() +
+  aes(x = BPG, y = `STANDING REACH`, fill = POS) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  labs(
+    title = "Standing Reach VS Blocks per game (BPG)",
+    fill = "Position"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    limits = c(0, 2))
+
+
+
+#height w/o shoes 
+height <- FinalTable %>%
+  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
+  ggplot() +
+  aes(x = BPG, y = `HEIGHT W/O SHOES`, fill = POS) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  labs(
+    title = "Height VS Blocks per game (BPG)",
+    fill = "Position"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    limits = c(0, 2))
+
+
+
+#Rookie height
+R_height <- RookieTable %>%
+  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
+  ggplot() +
+  aes(x = BPG, y = `HEIGHT W/O SHOES`, fill = POS) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  labs(
+    title = "Rookie Height VS Blocks per game (BPG)",
+    fill = "Position"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    limits = c(0, 2))
+
+#rookie standing reach 
+R_standingreach <- RookieTable %>%
+  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
+  ggplot() +
+  aes(x = BPG, y = `STANDING REACH`, fill = POS) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  labs(
+    title = "Rookie Standing Reach VS Blocks per game (BPG)",
+    fill = "Position"
+  ) +
+  theme_minimal() +
+  scale_x_continuous(
+    limits = c(0, 2))
+
+#join 
+
+
+ggarrange(R_standingreach, standingreach) + rremove("x.text")
 ```
