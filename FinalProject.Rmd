@@ -461,7 +461,7 @@ FinalTable1_sum_ppg <- FinalTable1 %>%
   )
 colnames(FinalTable1_sum_ppg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
 
-FinalTable1_sum_bpg %>%
+FinalTable1_sum_ppg %>%
   kable(
     caption = "NBA Points per Game (PPG) per position",
     booktabs = TRUE,
