@@ -17,7 +17,6 @@ library(tidyr)
 library(rvest)
 library(devtools)
 library(janitor)
-library(jtools) #  regression
 knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
