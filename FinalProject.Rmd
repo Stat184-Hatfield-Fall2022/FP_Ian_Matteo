@@ -300,23 +300,27 @@ FinalTable <- inner_join(
   by = c("Player" = "PLAYER")
 )
 
+'''
 RookieTable <- inner_join(
   x = allPlayersFinal,
   y = combine2223T,
   by = c("Player" = "PLAYER")
-)
+)'''
 ```
 
 Gets rid of the percent sign in the body fat column and creates a new column and then deletes the old one
 
 ```{r wrangling}
-FinalTable <- FinalTable %>% mutate(`STANDING REACH` = parse_number (`STANDING REACH`))
-
-FinalTable <- FinalTable %>% mutate(`HAND LENGTH (inches)` = parse_number(`HAND LENGTH (inches)`))
-
-FinalTable <- FinalTable %>% mutate(`HAND WIDTH (inches)` = parse_number(`HAND WIDTH (inches)`))
-
-FinalTable <- FinalTable %>% mutate(`HEIGHT W/O SHOES` = parse_number(`HEIGHT W/O SHOES`))
+FinalTable1 <- FinalTable %>%
+  separate(
+    col = `HEIGHT W/ SHOES`,
+    into = c("feet", "inches"),
+    sep = "'"
+  ) %>%
+  mutate(
+    across(.cols = everything(), .fns = parse_number),
+    height_in = 12*feet + inches
+  )
 
 
 ```
@@ -406,6 +410,7 @@ R_standingreach <- RookieTable %>%
 
 #join 
 
+ggarrange(R_height, height) + rremove("x.text")
 
 ggarrange(R_standingreach, standingreach) + rremove("x.text")
 ```
