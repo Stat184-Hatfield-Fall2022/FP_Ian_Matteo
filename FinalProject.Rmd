@@ -16,6 +16,8 @@ library(readr)
 library(tidyr)
 library(rvest)
 library(devtools)
+library(janitor)
+library(jtools) #  regression
 knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
@@ -299,118 +301,374 @@ FinalTable <- inner_join(
   y = combineFinal,
   by = c("Player" = "PLAYER")
 )
-
-'''
-RookieTable <- inner_join(
-  x = allPlayersFinal,
-  y = combine2223T,
-  by = c("Player" = "PLAYER")
-)'''
 ```
 
-Gets rid of the percent sign in the body fat column and creates a new column and then deletes the old one
+```{r wrangling data in numeric and proper postions}
 
-```{r wrangling}
+#standing reach
 FinalTable1 <- FinalTable %>%
+  separate(
+    col = `STANDING REACH`,
+    into = c("feet", "inches"),
+    sep = "' "
+  ) %>%
+  mutate(
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    standReach = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches"))
+
+#wingspan
+FinalTable1 <- FinalTable1 %>%
+  separate(
+    col = WINGSPAN,
+    into = c("feet", "inches"),
+    sep = "' "
+  ) %>%
+  mutate(
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    Wingspan = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches"))
+
+#height
+FinalTable1 <- FinalTable1 %>%
   separate(
     col = `HEIGHT W/ SHOES`,
     into = c("feet", "inches"),
-    sep = "'"
+    sep = "' "
   ) %>%
   mutate(
-    across(.cols = everything(), .fns = parse_number),
-    height_in = 12*feet + inches
-  )
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    Height = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches","HEIGHT W/O SHOES"))
+
+#hand length to numeric
+FinalTable1$`HAND LENGTH (inches)` <- as.numeric(FinalTable1$`HAND LENGTH (inches)`)
+
+#hand width to numeric
+FinalTable1$`HAND WIDTH (inches)` <- as.numeric(FinalTable1$`HAND WIDTH (inches)`)
+
+#Weight to numeric
+FinalTable1$`WEIGHT (LBS)` <- as.numeric(FinalTable1$`WEIGHT (LBS)`)
+
+
+#seperate postion
+FinalTable1 <- FinalTable1 %>%
+  separate(
+    col = POS,
+    into = c("POS", "two"),
+    sep = "-"
+  ) %>%
+  select( -c("two"))
+
+#deleting players without POS marked 
+FinalTable1 <- FinalTable1 [-c(45,157),]
+
 
 
 ```
 
+```{r Summary Table}
+
+#make summary table for rpg
+FinalTable1_sum_rpg <- FinalTable1 %>%
+  #sorts all by the position
+  group_by(POS) %>%
+  # select rebounds per game
+  select(POS, RPG) %>%
+  # summarize function for wanted info below
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+# gives columns names 
+colnames(FinalTable1_sum_rpg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_rpg %>%
+  kable(
+    caption = "NBA Reounds per Game (RPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+
+#bpg
+FinalTable1_sum_bpg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, BPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_bpg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_bpg %>%
+  kable(
+    caption = "NBA Blocks per Game (BPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+
+#ppg
+FinalTable1_sum_ppg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, PPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_ppg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_bpg %>%
+  kable(
+    caption = "NBA Points per Game (PPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+
+#apg
+FinalTable1_sum_apg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, APG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_apg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_apg %>%
+  kable(
+    caption = "NBA Assists per Game (APG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+
+#spg
+FinalTable1_sum_spg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, SPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_spg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_bpg %>%
+  kable(
+    caption = "NBA Steals per Game (SPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+```
+
+```{r regression model}
+# Corrplot
+library(corrplot)
+cors <- cor(FinalTable1[, c("WEIGHT (LBS)","standReach", "Wingspan", "Height", "RPG", "BPG", "PPG","APG","SPG")], use = "pairwise.complete.obs")
+
+corTest <- cor.mtest(FinalTable1[, c("WEIGHT (LBS)","standReach", "Wingspan", "Height", "RPG","BPG","PPG","APG","SPG")])
+# 0 means significant
+corrplot(cors,method = "color", type = "lower", p.mat = corTest$p, insig = "p-value", sig.level = -1, number.digits = 1)
+
+
+```
+
+```{r regression summary with R-SQ}
+# Fit a regression RPG
+RPG_regression <- lm(
+  data = FinalTable1,
+  formula = RPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(RPG_regression)
+
+#BPG
+BPG_regression <- lm(
+  data = FinalTable1,
+  formula = BPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(BPG_regression)
+
+# PPG
+PPG_regression <- lm(
+  data = FinalTable1,
+  formula = PPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(PPG_regression)
+
+# APG
+APG_regression <- lm(
+  data = FinalTable1,
+  formula = APG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(APG_regression)
+
+# SPG
+SPG_regression <- lm(
+  data = FinalTable1,
+  formula = SPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(SPG_regression)
+```
+
+fit a regression
+
 ```{r visuals}
 
-#wingspan
-wingspan <- FinalTable %>%
- filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
- ggplot() +
-  aes(x = BPG, y = WINGSPAN, fill = POS) +
-  geom_boxplot() +
-  scale_fill_hue(direction = 1) +
+#all visuals are given based on strongest p-value and correlation
+# rpg v height
+RPG <- ggplot(FinalTable1) +
+  aes(x = RPG, y = Height) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Rebounds per Game (RPG) and Height") +
+  theme_minimal()
+
+#bpg vs standing reach
+BPG <- ggplot(FinalTable1) +
+  aes(x = BPG, y = standReach) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
   labs(
-    title = "Wingspan VS Blocks per game (BPG)",
-    fill = "Position"
+    y = "Standing Reach",
+    title = "Blocks per Game (BPG) and Standing Reach"
   ) +
-  theme_minimal() +
-  scale_x_continuous(
-    limits = c(0, 2))
+  theme_minimal()
+
+#none for ppg as correlation is weak 
+
+# apg and wingspan
+APG <- ggplot(FinalTable1) +
+  aes(x = APG, y = Wingspan) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Assists per Game (APG) and Wingspan") +
+  theme_minimal()
+
+#none for stg as correlation is weak
+
+#join three together
+ggarrange(RPG, BPG, APG) + rremove("x.text")
 
 
+#make same tables, but show with respect to position
 
-# Standing reach
-standingreach <- FinalTable %>%
-  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
-  ggplot() +
-  aes(x = BPG, y = `STANDING REACH`, fill = POS) +
-  geom_boxplot() +
-  scale_fill_hue(direction = 1) +
+RPG_pos <- ggplot(FinalTable1) +
+  aes(x = RPG, y = Height, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
+  labs(title = "Rebounds per Game (RPG) and Height") +
+  theme_minimal()
+
+#bpg vs standing reach
+BPG_pos <- ggplot(FinalTable1) +
+  aes(x = BPG, y = standReach, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
   labs(
-    title = "Standing Reach VS Blocks per game (BPG)",
-    fill = "Position"
+    y = "Standing Reach",
+    title = "Blocks per Game (BPG) and Standing Reach"
   ) +
-  theme_minimal() +
-  scale_x_continuous(
-    limits = c(0, 2))
+  theme_minimal()
 
 
+#none for ppg as correlation is weak 
 
-#height w/o shoes 
-height <- FinalTable %>%
-  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
-  ggplot() +
-  aes(x = BPG, y = `HEIGHT W/O SHOES`, fill = POS) +
-  geom_boxplot() +
-  scale_fill_hue(direction = 1) +
-  labs(
-    title = "Height VS Blocks per game (BPG)",
-    fill = "Position"
-  ) +
-  theme_minimal() +
-  scale_x_continuous(
-    limits = c(0, 2))
+# apg and wingspan
+APG_pos <- ggplot(FinalTable1) +
+  aes(x = APG, y = Wingspan, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
+  labs(title = "Assist per Game (APG) and Wingspan") +
+  theme_minimal()
 
+ggarrange(RPG_pos, BPG_pos, APG_pos) + rremove("x.text")
 
-
-#Rookie height
-R_height <- RookieTable %>%
-  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
-  ggplot() +
-  aes(x = BPG, y = `HEIGHT W/O SHOES`, fill = POS) +
-  geom_boxplot() +
-  scale_fill_hue(direction = 1) +
-  labs(
-    title = "Rookie Height VS Blocks per game (BPG)",
-    fill = "Position"
-  ) +
-  theme_minimal() +
-  scale_x_continuous(
-    limits = c(0, 2))
-
-#rookie standing reach 
-R_standingreach <- RookieTable %>%
-  filter(POS %in% c("PG", "SG", "PF", "SF", "C")) %>%
-  ggplot() +
-  aes(x = BPG, y = `STANDING REACH`, fill = POS) +
-  geom_boxplot() +
-  scale_fill_hue(direction = 1) +
-  labs(
-    title = "Rookie Standing Reach VS Blocks per game (BPG)",
-    fill = "Position"
-  ) +
-  theme_minimal() +
-  scale_x_continuous(
-    limits = c(0, 2))
-
-#join 
-
-ggarrange(R_height, height) + rremove("x.text")
-
-ggarrange(R_standingreach, standingreach) + rremove("x.text")
 ```
