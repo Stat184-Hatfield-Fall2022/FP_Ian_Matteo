@@ -3,8 +3,8 @@ title: "NBA Player Features"
 author: "Ian and Matteo"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -22,7 +22,7 @@ library(devtools)
 library(janitor)
 library(ggpubr)
 knitr::opts_chunk$set(
-  echo = FALSE,
+  echo = TRUE,
   message = FALSE,
   warning = FALSE,
   fig.align = 'center'
@@ -40,7 +40,7 @@ Since the introduction of statistics into sports, analysis's have always been tr
 ## Data Wrangling
 To answer this question, we need data that includes all the current NBA players physical features with their average points per game. We were not lucky enough to find this exact data in one place. NBA.com had two different datasets that when combined, would give us all the information we needed. The first dataset has every player in the current season, along with some of their stats. The second dataset contained information about the physical attributes of each player in a given NBA combine season. Dr. Hatfield informed us that the website that contained this data was dynamically written. To scrape the from the site, we needed to first save the website, and then provide the location of the saved website in our computer as the html. We chose to start our data collection at the 2003-2004 combine because the years prior do not have as many current NBA players. After we scraped all the years, we combined them into one data frame of all combine players physical data. This dataframe has 1327 cases while the total current players dataframe has only 289 cases. This is because not every player that was recorded during the combine made it to an NBA team. Also, many of the players who were drafted in seasons prior, no longer play in the NBA. To make sure that only the current players are kept, the two tables were inner joined by a players name so only the players whose names are present in the current seasons data would be present in the final dataset. This final table contains 182 cases.
 
-```{r Scraping All Players Table}
+```{r Scraping All Players Table, echo = FALSE}
 ## Web Scraping ----
 
 #Every player in the nba 
@@ -78,7 +78,7 @@ allPlayersFinal <- rbind(allPlayersFinal, allPlayers3)
 ```
 
 
-```{r Scraping combine players}
+```{r Scraping combine players, echo = FALSE}
 #Player Body Measurement data starting with 2008-2009 draft
 #Player Body Measurement data from 2003 - 2023
 
@@ -304,7 +304,7 @@ combineFinal <- rbind(combineFinal, combine2223T)
 ```
 
 
-```{r Join}
+```{r Join, echo = FALSE}
 FinalTable <- inner_join(
   x = allPlayersFinal,
   y = combineFinal,
@@ -312,7 +312,7 @@ FinalTable <- inner_join(
 )
 ```
 
-```{r wrangling data in numeric and proper postions}
+```{r wrangling data in numeric and proper postions, echo = FALSE}
 
 #standing reach
 FinalTable1 <- FinalTable %>%
@@ -379,7 +379,7 @@ FinalTable1 <- FinalTable1 [-c(45,157),]
 
 ```
 
-```{r Summary Table RPG}
+```{r Summary Table RPG, echo = FALSE}
 
 #make summary table for rpg
 FinalTable1SumRpg <- FinalTable1 %>%
@@ -421,7 +421,7 @@ FinalTable1SumRpg %>%
 
 Figure 1: Summary statistics of rebounds per game grouped by position
 
-```{r Summary Table BPG}
+```{r Summary Table BPG, echo = FALSE}
 #bpg
 FinalTable1SumBpg <- FinalTable1 %>%
   group_by(POS) %>%
@@ -457,7 +457,7 @@ FinalTable1SumBpg %>%
 ```
 
 Figure 2: Summary statistics of blocks per game grouped by position
-```{r Summary Table PPG}
+```{r Summary Table PPG, echo = FALSE}
 #ppg
 FinalTable1SumPpg <- FinalTable1 %>%
   group_by(POS) %>%
@@ -492,7 +492,7 @@ FinalTable1SumPpg %>%
 
 ```
 Figure 3: Summary statistics of points per game grouped by position
-```{r Summary Table APG}
+```{r Summary Table APG, echo = FALSE}
 #apg
 FinalTable1SumApg <- FinalTable1 %>%
   group_by(POS) %>%
@@ -527,7 +527,7 @@ FinalTable1SumApg %>%
 
 ```
 Figure 4: Summary statistics of assists per game grouped by position
-```{r Summary Table SPG}
+```{r Summary Table SPG, echo = FALSE}
 #spg
 FinalTable1SumSpg <- FinalTable1 %>%
   group_by(POS) %>%
@@ -563,7 +563,7 @@ FinalTable1SumBpg %>%
 Figure 5: Summary statistics of steals per game grouped by position
 
 Before fitting a regression model to predict certain features, we want to make sure which features are correlated with each other. We don't want to train a model on features that have no correlation with each other. To see how features are related, we want to create a heat map showing our desired features correlation.
-```{r regression model}
+```{r regression model, echo = FALSE}
 # Corrplot
 library(corrplot)
 cors <- cor(FinalTable1[, c("WEIGHT (LBS)","standReach", "Wingspan", "Height", "RPG", "BPG", "PPG","APG","SPG")], use = "pairwise.complete.obs")
@@ -576,8 +576,8 @@ corrplot(cors,method = "color", type = "lower", p.mat = corTest$p, insig = "p-va
 ```
 Figure 6: Correlation matrix showing the relations of all our desired features
 
-Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan. Below are the regression summary for each variables we are testing (RPG, BPG, PPG, ASP, SPG). From each, we can see the residual, as well as different coefficients. Something important to our test is the correlation and p-values. These coefficients can tell us if any of our NBA player measurements could determine a statistic. 
-```{r regression summary with R-SQ, results = 'hide'}
+Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan. We made a regression summary for each variables we are testing (RPG, BPG, PPG, ASP, SPG). From each, we can see the residual, as well as different coefficients. Something important to our test is the correlation and p-values. These coefficients can tell us if any of our NBA player measurements could determine a statistic. 
+```{r regression summary with R-SQ, results = 'hide', echo = FALSE}
 # Fit a regression RPG
 RPGRegression <- lm(
   data = FinalTable1,
@@ -621,9 +621,9 @@ summary(SPGRegression)
 
 ```
 
-From the regression summary, we can see that three of the five variables saw strong correlation between the NBA player measurements and statistics. Those were RPG, BPG, and ASP. The strongest measurement for each were RPG and height, BPG and standing reach, and APG  and wingspan.
+From the regression summary, we can see that three of the five variables saw strong correlation between the NBA player measurements and statistics. Those were RPG, BPG, and ASP. The strongest measurement for each were RPG and height, BPG and standing reach, and APG  and wingspan. We decided to then create a visualization for each. 
 
-```{r visuals, results = 'hide'}
+```{r visuals, results = 'hide',, echo = FALSE}
 
 #all visuals are given based on strongest p-value and correlation
 # rpg v height
@@ -674,7 +674,7 @@ ggarrange(RPG, BPG, APG) + rremove("x.text")
 ## Results
 
 The fitting of the linear regression models is visualized by these three graphs. With the fitting acting as a line of best fit, the relationship between physical features and in game stats can be seen. For example, the taller a player, the more blocks per game. The longer a players standing reach, the more average blocks per game. The longer a players wingspan, the less assists per game they average. 
-```{r visuals with pos, results = 'hide'}
+```{r visuals with pos, results = 'hide', , echo = FALSE}
 
 #make same tables, but show with respect to position
 
@@ -727,14 +727,8 @@ ggarrange(RPGPos, BPGPos, APGPos) + rremove("x.text")
 
 These final visualizations contain the same data as the prior group of visualizations, but now, a players position is used as a filter. This allows us to see the importance of features  depending on a players position. For example, in Rebounds per Game and Height, in the power forward (PF) position, the taller the player the more rebounds they get relationship is apparent and can be seen by the increasing green line. But if you look at the shooting guard (SG) position or the point guard (PG) position, there seems to be no correlation between the players height and the number of rebounds per game. Looking at the Blocks per Game and Standing Reach visualization it can be seen that standing reach might not matter as much for point guards as it does for small forwards. Lastly, in the Assist per Game and Wingspan visualization, a greater wingspan results in less assists per game throughout all positions.
 
+
 ## Code Appendix
-```{r code=readLines(knitr::purl('~/path/to/file.Rmd', documentation = 0)), eval = FALSE}
-
-
-```
-```
-
-
-
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
 ```
 
