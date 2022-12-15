@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 )
 ```
 ## Player Attributes vs. In game Stats
-Since the introduction of statistics into sports, analysis's have always been trying to find out how to win more games. Many things about a player contribute to their effectiveness. Field goal percentage, passes per game, minutes per game etc. are all attributes that give some sort of insight into a players game. But something that has always interested us is how features that a player cant change effect their effectiveness. So the question we wanted to answer is, what physical features about a player in the NBA effect their average points per game? 
+Since the introduction of statistics into sports, analysis's have always been trying to find out how to win more games. Many things about a player contribute to their effectiveness. Field goal percentage, passes per game, minutes per game etc. are all attributes that give some sort of insight into a players game. But something that has always interested us is how features that a player can't change effect their game. So the question we wanted to answer is, how do a players physical features effect their in game stats?
 
 
 
@@ -657,7 +657,7 @@ APG <- ggplot(FinalTable1) +
 ggarrange(RPG, BPG, APG) + rremove("x.text")
 
 ```
-
+## Results
 The fitting of the linear regression models is visualized by these three graphs. With the fitting acting as a line of best fit, the relationship between physical features and in game stats can be seen. For example, the taller a player, the more blocks per game. The longer a players standing reach, the more average blocks per game. The longer a players wingspan, the less assists per game they average. 
 ```{r visuals with pos, results = 'hide'}
 #make same tables, but show with respect to position
