@@ -3,8 +3,8 @@ title: "NBA Player Features"
 author: "Ian and Matteo"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -728,9 +728,12 @@ ggarrange(RPGPos, BPGPos, APGPos) + rremove("x.text")
 These final visualizations contain the same data as the prior group of visualizations, but now, a players position is used as a filter. This allows us to see the importance of features  depending on a players position. For example, in Rebounds per Game and Height, in the power forward (PF) position, the taller the player the more rebounds they get relationship is apparent and can be seen by the increasing green line. But if you look at the shooting guard (SG) position or the point guard (PG) position, there seems to be no correlation between the players height and the number of rebounds per game. Looking at the Blocks per Game and Standing Reach visualization it can be seen that standing reach might not matter as much for point guards as it does for small forwards. Lastly, in the Assist per Game and Wingspan visualization, a greater wingspan results in less assists per game throughout all positions.
 
 ## Code Appendix
-```{r get-labels, echo = FALSE}
-labs = knitr::all_labels()
-labs = setdiff(labs, c("setup", "get-labels"))}
+```{r code=readLines(knitr::purl('~/path/to/file.Rmd', documentation = 0)), eval = FALSE}
+
+
+```
+```
+
 
 
 ```

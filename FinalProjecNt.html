@@ -1594,121 +1594,6 @@ we are testing (RPG, BPG, PPG, ASP, SPG). From each, we can see the
 residual, as well as different coefficients. Something important to our
 test is the correlation and p-values. These coefficients can tell us if
 any of our NBA player measurements could determine a statistic.</p>
-<pre><code>## 
-## Call:
-## lm(formula = RPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`, 
-##     data = FinalTable1)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -4.7357 -1.1997 -0.2772  0.9727  6.7574 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)    -27.09466    4.90894  -5.519 1.72e-07 ***
-## Height           0.32292    0.14176   2.278   0.0243 *  
-## Wingspan        -0.04742    0.10171  -0.466   0.6419    
-## standReach       0.06090    0.12104   0.503   0.6157    
-## `WEIGHT (LBS)`   0.01697    0.01096   1.549   0.1239    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 1.963 on 133 degrees of freedom
-##   (43 observations deleted due to missingness)
-## Multiple R-squared:  0.3439, Adjusted R-squared:  0.3241 
-## F-statistic: 17.43 on 4 and 133 DF,  p-value: 1.612e-11</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = BPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`, 
-##     data = FinalTable1)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.73265 -0.26100 -0.05146  0.13858  1.83448 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)    -6.707004   0.996947  -6.728 4.67e-10 ***
-## Height          0.012150   0.028789   0.422   0.6737    
-## Wingspan        0.004627   0.020657   0.224   0.8231    
-## standReach      0.061115   0.024581   2.486   0.0142 *  
-## `WEIGHT (LBS)` -0.002226   0.002225  -1.000   0.3190    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.3987 on 133 degrees of freedom
-##   (43 observations deleted due to missingness)
-## Multiple R-squared:  0.3839, Adjusted R-squared:  0.3653 
-## F-statistic: 20.72 on 4 and 133 DF,  p-value: 2.736e-13</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = PPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`, 
-##     data = FinalTable1)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -12.726  -4.976  -1.653   4.099  18.919 
-## 
-## Coefficients:
-##                Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)    29.15612   17.04630   1.710   0.0895 .
-## Height          0.02428    0.49225   0.049   0.9607  
-## Wingspan       -0.25496    0.35320  -0.722   0.4717  
-## standReach      0.06738    0.42031   0.160   0.8729  
-## `WEIGHT (LBS)` -0.02259    0.03805  -0.594   0.5536  
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 6.817 on 133 degrees of freedom
-##   (43 observations deleted due to missingness)
-## Multiple R-squared:  0.02356,    Adjusted R-squared:  -0.005807 
-## F-statistic: 0.8022 on 4 and 133 DF,  p-value: 0.5258</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = APG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`, 
-##     data = FinalTable1)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -3.3134 -1.2239 -0.2821  1.1024  5.3167 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)    23.972678   4.131644   5.802 4.55e-08 ***
-## Height         -0.159958   0.119311  -1.341   0.1823    
-## Wingspan       -0.149392   0.085607  -1.745   0.0833 .  
-## standReach      0.032273   0.101873   0.317   0.7519    
-## `WEIGHT (LBS)`  0.001293   0.009222   0.140   0.8887    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 1.652 on 133 degrees of freedom
-##   (43 observations deleted due to missingness)
-## Multiple R-squared:  0.2155, Adjusted R-squared:  0.1919 
-## F-statistic: 9.133 on 4 and 133 DF,  p-value: 1.501e-06</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = SPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`, 
-##     data = FinalTable1)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.83456 -0.28554 -0.02185  0.19824  1.91198 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)   
-## (Intercept)     3.260079   1.038189   3.140  0.00208 **
-## Height         -0.016877   0.029980  -0.563  0.57442   
-## Wingspan       -0.016346   0.021511  -0.760  0.44866   
-## standReach      0.006352   0.025598   0.248  0.80441   
-## `WEIGHT (LBS)` -0.002256   0.002317  -0.974  0.33200   
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.4152 on 133 degrees of freedom
-##   (43 observations deleted due to missingness)
-## Multiple R-squared:  0.08158,    Adjusted R-squared:  0.05396 
-## F-statistic: 2.953 on 4 and 133 DF,  p-value: 0.0224</code></pre>
 <p>From the regression summary, we can see that three of the five
 variables saw strong correlation between the NBA player measurements and
 statistics. Those were RPG, BPG, and ASP. The strongest measurement for
@@ -1738,6 +1623,14 @@ Game and Standing Reach visualization it can be seen that standing reach
 might not matter as much for point guards as it does for small forwards.
 Lastly, in the Assist per Game and Wingspan visualization, a greater
 wingspan results in less assists per game throughout all positions.</p>
+</div>
+<div id="code-appendix" class="section level2">
+<h2>Code Appendix</h2>
+<p>```{{r code = readLines(knitr::purl(“path/to/file.Rmd”, documentation
+= 1)), echo = T, eval = F}</p>
+<pre><code>
+
+</code></pre>
 </div>
 
 
