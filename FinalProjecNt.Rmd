@@ -667,7 +667,7 @@ The fitting of the linear regression models is visualized by these three graphs.
 # rpg v height
 RPG <- ggplot(FinalTable1) +
   aes(x = RPG, y = Height) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(title = "Rebounds per Game (RPG) and Height") +
   theme_minimal() +
@@ -678,7 +678,7 @@ RPG <- ggplot(FinalTable1) +
 #bpg vs standing reach
 BPG <- ggplot(FinalTable1) +
   aes(x = BPG, y = standReach) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(
     y = "Standing Reach",
@@ -695,14 +695,13 @@ BPG <- ggplot(FinalTable1) +
 # apg and wingspan
 APG <- ggplot(FinalTable1) +
   aes(x = APG, y = Wingspan) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(title = "Assists per Game (APG) and Wingspan") +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 10L)
   )
-
 
 #none for stg as correlation is weak
 
@@ -714,7 +713,7 @@ ggarrange(RPG, BPG, APG) + rremove("x.text")
 
 RPG_pos <- ggplot(FinalTable1) +
   aes(x = RPG, y = Height, colour = POS) +
-  geom_point(shape = "circle", size = 1.5) +
+  geom_point(shape = "circle", size = 1) +
   geom_smooth(span = 0.75) +
   scale_color_hue(direction = 1) +
   labs(title = "Rebounds per Game (RPG) and Height") +
@@ -727,7 +726,7 @@ RPG_pos <- ggplot(FinalTable1) +
 #bpg vs standing reach
 BPG_pos <- ggplot(FinalTable1) +
   aes(x = BPG, y = standReach, colour = POS) +
-  geom_point(shape = "circle", size = 1.5) +
+  geom_point(shape = "circle", size = 1) +
   geom_smooth(span = 0.75) +
   scale_color_hue(direction = 1) +
   labs(
@@ -740,14 +739,13 @@ BPG_pos <- ggplot(FinalTable1) +
   )
 
 
-
 #none for ppg as correlation is weak 
 
 # apg and wingspan
 APG_pos <- ggplot(FinalTable1) +
   aes(x = APG, y = Wingspan, colour = POS) +
-  geom_point(shape = "circle", size = 1.5) +
-  geom_smooth(span = 0.75) +
+  geom_point(shape = "circle", size = 1) +
+  geom_smooth(span = .75) +
   scale_color_hue(direction = 1) +
   labs(title = "Assist per Game (APG) and Wingspan") +
   theme_minimal() +
