@@ -1,0 +1,699 @@
+---
+title: "NBA Player Features"
+author: "Ian and Matteo"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(tinytex)
+library(latexpdf)
+library(readr)
+library(tidyr)
+library(rvest)
+library(devtools)
+library(janitor)
+library(ggpubr)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = 'center'
+)
+```
+## Player Attributes vs. In game Stats
+Since the introduction of statistics into sports, analysis's have always been trying to find out how to win more games. Many things about a player contribute to their effectiveness. Field goal percentage, passes per game, minutes per game etc. are all attributes that give some sort of insight into a players game. But something that has always interested us is how features that a player cant change effect their effectiveness. So the question we wanted to answer is, what physical features about a player in the NBA effect their average points per game? 
+
+
+
+
+
+
+
+## Data Wrangling
+To answer this question, we need data that includes all the current NBA players physical features with their average points per game. We were not lucky enough to find this exact data in one place. NBA.com had two different datasets that when combined, would give us all the information we needed. The first dataset has every player in the current season, along with some of their stats. The second dataset contained information about the physical attributes of each player in a given NBA combine season. Dr. Hatfield informed us that the website that contained this data was dynamically written. To scrape the from the site, we needed to first save the website, and then provide the location of the saved website in our computer as the html. We chose to start our data collection at the 2003-2004 combine because the years prior do not have as many current NBA players. After we scraped all the years, we combined them into one data frame of all combine players physical data. This dataframe has 1327 cases while the total current players dataframe has only 289 cases. This is because not every player that was recorded during the combine made it to an NBA team. Also, many of the players who were drafted in seasons prior, no longer play in the NBA. To make sure that only the current players are kept, the two tables were inner joined by a players name so only the players whose names are present in the current seasons data would be present in the final dataset. This final table contains 182 cases.
+
+```{r Scraping All Players Table}
+## Web Scraping ----
+
+#Every player in the nba 
+fullRoster1 <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/1/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers1 <- fullRoster1[[13]]
+
+#second page
+fullRoster2 <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/2/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers2 <- fullRoster2[[13]]
+
+#third page 
+fullRoster3 <- read_html(
+  x = "https://basketball.realgm.com/nba/stats/2023/Averages/Qualified/per/All/desc/3/Regular_Season"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+allPlayers3 <- fullRoster3[[13]]
+
+# merge player tables one and two
+allPlayersFinal <- rbind(allPlayers1, allPlayers2)
+
+# merge table one and two with the third
+allPlayersFinal <- rbind(allPlayersFinal, allPlayers3)
+```
+
+
+```{r Scraping combine players}
+#Player Body Measurement data starting with 2008-2009 draft
+#Player Body Measurement data from 2003 - 2023
+
+#2003 - 2004
+combine34 <- read_html(
+  x = "34.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine34T <- combine34[[1]]
+
+#2004 - 2005
+combine45 <- read_html(
+  x = "45.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine45T <- combine45[[1]]
+
+combineFinal <- rbind(combine34T, combine45T)
+
+#2005 - 2006
+combine56 <- read_html(
+  x = "56.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine56T <- combine56[[1]]
+
+combineFinal <- rbind(combineFinal, combine56T)
+
+#2006 - 2007
+combine67 <- read_html(
+  x = "67.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine67T <- combine67[[1]]
+
+combineFinal <- rbind(combineFinal, combine67T)
+
+#2007 - 2008
+combine78 <- read_html(
+  x = "78.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine78T <- combine78[[1]]
+
+combineFinal <- rbind(combineFinal, combine78T)
+
+# 2008 - 2009 
+combine89 <- read_html(
+  x = "89.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine89T <- combine89[[1]]
+
+combineFinal <- rbind(combineFinal, combine89T)
+
+
+# 2009 - 2010
+combine910 <- read_html(
+  x = "910.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine910T <- combine910[[1]]
+
+combineFinal <- rbind(combineFinal, combine910T)
+
+#2010 - 2011
+combine1011 <- read_html(
+  x = "1011.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1011T <- combine1011[[1]]
+
+combineFinal <- rbind(combineFinal, combine1011T)
+
+#2011 - 2012
+combine1112 <- read_html(
+  x = "1112.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1112T <- combine1112[[1]]
+
+combineFinal <- rbind(combineFinal, combine1112T)
+
+# 2012 - 2013
+combine1213 <- read_html(
+  x = "1213.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1213T <- combine1213[[1]]
+
+combineFinal <- rbind(combineFinal, combine1213T)
+
+#2013 - 2014
+combine1314 <- read_html(
+  x = "1314.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1314T <- combine1314[[1]]
+
+combineFinal <- rbind(combineFinal, combine1314T)
+
+#2014 - 2015
+combine1415 <- read_html(
+  x = "1415.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1415T <- combine1415[[1]]
+
+combineFinal <- rbind(combineFinal, combine1415T)
+
+#2015-2016
+combine1516 <- read_html(
+  x = "1516.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1516T <- combine1516[[1]]
+
+combineFinal <- rbind(combineFinal, combine1516T)
+
+#2016 - 2017
+combine1617 <- read_html(
+  x = "1617.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1617T <- combine1617[[1]]
+
+combineFinal <- rbind(combineFinal, combine1617T)
+
+#2017 - 2018
+combine1718 <- read_html(
+  x = "1718.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1718T <- combine1718[[1]]
+
+combineFinal <- rbind(combineFinal, combine1718T)
+
+# 2018 - 2019
+combine1819 <- read_html(
+  x = "1819.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1819T <- combine1819[[1]]
+
+combineFinal <- rbind(combineFinal, combine1819T)
+
+#2019 - 2020
+combine1920 <- read_html(
+  x = "1920.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine1920T <- combine1920[[1]]
+
+combineFinal <- rbind(combineFinal, combine1920T)
+
+# 2020 - 2021
+combine2021 <- read_html(
+  x = "2021.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2021T <- combine2021[[1]]
+
+combineFinal <- rbind(combineFinal, combine2021T)
+
+#2021 - 2022
+combine2122 <- read_html(
+  x = "2122.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2122T <- combine2122[[1]]
+
+combineFinal <- rbind(combineFinal, combine2122T)
+
+#2022 - 2023
+combine2223 <- read_html(
+  x = "2223.html"
+) %>%
+  html_elements(css = "table") %>%
+  html_table()
+
+combine2223T <- combine2223[[1]]
+
+combineFinal <- rbind(combineFinal, combine2223T)
+
+```
+
+
+```{r Join}
+FinalTable <- inner_join(
+  x = allPlayersFinal,
+  y = combineFinal,
+  by = c("Player" = "PLAYER")
+)
+```
+
+```{r wrangling data in numeric and proper postions}
+
+#standing reach
+FinalTable1 <- FinalTable %>%
+  separate(
+    col = `STANDING REACH`,
+    into = c("feet", "inches"),
+    sep = "' "
+  ) %>%
+  mutate(
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    standReach = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches"))
+
+#wingspan
+FinalTable1 <- FinalTable1 %>%
+  separate(
+    col = WINGSPAN,
+    into = c("feet", "inches"),
+    sep = "' "
+  ) %>%
+  mutate(
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    Wingspan = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches"))
+
+#height
+FinalTable1 <- FinalTable1 %>%
+  separate(
+    col = `HEIGHT W/ SHOES`,
+    into = c("feet", "inches"),
+    sep = "' "
+  ) %>%
+  mutate(
+    across(.cols = c("feet", "inches"), .fns = parse_number),
+    Height = 12*feet + inches
+  ) %>%
+  select( -c("feet", "inches","HEIGHT W/O SHOES"))
+
+#hand length to numeric
+FinalTable1$`HAND LENGTH (inches)` <- as.numeric(FinalTable1$`HAND LENGTH (inches)`)
+
+#hand width to numeric
+FinalTable1$`HAND WIDTH (inches)` <- as.numeric(FinalTable1$`HAND WIDTH (inches)`)
+
+#Weight to numeric
+FinalTable1$`WEIGHT (LBS)` <- as.numeric(FinalTable1$`WEIGHT (LBS)`)
+
+
+#seperate postion
+FinalTable1 <- FinalTable1 %>%
+  separate(
+    col = POS,
+    into = c("POS", "two"),
+    sep = "-"
+  ) %>%
+  select( -c("two"))
+
+#deleting players without POS marked 
+FinalTable1 <- FinalTable1 [-c(45,157),]
+
+
+
+```
+
+```{r Summary Table RPG}
+
+#make summary table for rpg
+FinalTable1_sum_rpg <- FinalTable1 %>%
+  #sorts all by the position
+  group_by(POS) %>%
+  # select rebounds per game
+  select(POS, RPG) %>%
+  # summarize function for wanted info below
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+# gives columns names 
+colnames(FinalTable1_sum_rpg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_rpg %>%
+  kable(
+    caption = "NBA Reounds per Game (RPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+```
+
+Figure 1: Summary statistics of rebounds per game grouped by position
+
+```{r Summary Table BPG}
+#bpg
+FinalTable1_sum_bpg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, BPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_bpg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_bpg %>%
+  kable(
+    caption = "NBA Blocks per Game (BPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+```
+
+Figure 2: Summary statistics of blocks per game grouped by position
+```{r Summary Table PPG}
+#ppg
+FinalTable1_sum_ppg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, PPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_ppg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_ppg %>%
+  kable(
+    caption = "NBA Points per Game (PPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+```
+Figure 3: Summary statistics of points per game grouped by position
+```{r Summary Table APG}
+#apg
+FinalTable1_sum_apg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, APG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_apg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_apg %>%
+  kable(
+    caption = "NBA Assists per Game (APG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+
+```
+Figure 4: Summary statistics of assists per game grouped by position
+```{r Summary Table SPG}
+#spg
+FinalTable1_sum_spg <- FinalTable1 %>%
+  group_by(POS) %>%
+  select(POS, SPG) %>%
+  summarize(
+    across(
+      .cols = where(is.numeric),
+      .fns = list(
+        min = ~min(.x, na.rm = TRUE),
+        Q1 = ~quantile(.x, probs = 0.25, na.rm = TRUE),
+        median = ~median(.x, na.rm = TRUE),
+        Q3 = ~quantile(.x, probs = 0.75, na.rm = TRUE),
+        max = ~max(.x, na.rm = TRUE),
+        mean = ~mean(.x, na.rm = TRUE),
+        sasd = ~sd(.x, na.rm = TRUE)
+      )
+    )
+  )
+colnames(FinalTable1_sum_spg) <- c('POS','min','Q1','Median','Q3','Max','Mean','SD','n')
+
+FinalTable1_sum_bpg %>%
+  kable(
+    caption = "NBA Steals per Game (SPG) per position",
+    booktabs = TRUE,
+    align = c("l", rep("c", 6)),
+    digits = 2
+  ) %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "condensed"),
+    font_size = 16
+  )
+```
+Figure 5: Summary statistics of steals per game grouped by position
+
+Before fitting a regression model to predict certain features, we want to make sure which features are correlated with each other. We don't want to train a model on features that have no correlation with each other. To see how features are related, we want to create a heat map showing our desired features correlation.
+```{r regression model}
+# Corrplot
+library(corrplot)
+cors <- cor(FinalTable1[, c("WEIGHT (LBS)","standReach", "Wingspan", "Height", "RPG", "BPG", "PPG","APG","SPG")], use = "pairwise.complete.obs")
+
+corTest <- cor.mtest(FinalTable1[, c("WEIGHT (LBS)","standReach", "Wingspan", "Height", "RPG","BPG","PPG","APG","SPG")])
+# 0 means significant
+corrplot(cors,method = "color", type = "lower", p.mat = corTest$p, insig = "p-value", sig.level = -1, number.digits = 1)
+
+
+```
+Figure 6: Correlation matrix showing the relations of all our desired features
+
+Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan.
+```{r regression summary with R-SQ, results = 'hide'}
+# Fit a regression RPG
+RPG_regression <- lm(
+  data = FinalTable1,
+  formula = RPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(RPG_regression)
+
+#BPG
+BPG_regression <- lm(
+  data = FinalTable1,
+  formula = BPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(BPG_regression)
+
+# PPG
+PPG_regression <- lm(
+  data = FinalTable1,
+  formula = PPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(PPG_regression)
+
+# APG
+APG_regression <- lm(
+  data = FinalTable1,
+  formula = APG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(APG_regression)
+
+# SPG
+SPG_regression <- lm(
+  data = FinalTable1,
+  formula = SPG ~ Height + Wingspan + standReach + `WEIGHT (LBS)`
+)
+
+summary(SPG_regression)
+```
+
+
+```{r visuals, results = 'hide'}
+
+#all visuals are given based on strongest p-value and correlation
+# rpg v height
+RPG <- ggplot(FinalTable1) +
+  aes(x = RPG, y = Height) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Rebounds per Game (RPG) and Height") +
+  theme_minimal()
+
+#bpg vs standing reach
+BPG <- ggplot(FinalTable1) +
+  aes(x = BPG, y = standReach) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(
+    y = "Standing Reach",
+    title = "Blocks per Game (BPG) and Standing Reach"
+  ) +
+  theme_minimal()
+
+#none for ppg as correlation is weak 
+
+# apg and wingspan
+APG <- ggplot(FinalTable1) +
+  aes(x = APG, y = Wingspan) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Assists per Game (APG) and Wingspan") +
+  theme_minimal()
+
+#none for stg as correlation is weak
+
+#join three together
+ggarrange(RPG, BPG, APG) + rremove("x.text")
+
+```
+
+The fitting of the linear regression models is visualized by these three graphs. With the fitting acting as a line of best fit, the relationship between physical features and in game stats can be seen. For example, the taller a player, the more blocks per game. The longer a players standing reach, the more average blocks per game. The longer a players wingspan, the less assists per game they average. 
+```{r visuals with pos, results = 'hide'}
+#make same tables, but show with respect to position
+
+RPG_pos <- ggplot(FinalTable1) +
+  aes(x = RPG, y = Height, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
+  labs(title = "Rebounds per Game (RPG) and Height") +
+  theme_minimal()
+
+#bpg vs standing reach
+BPG_pos <- ggplot(FinalTable1) +
+  aes(x = BPG, y = standReach, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
+  labs(
+    y = "Standing Reach",
+    title = "Blocks per Game (BPG) and Standing Reach"
+  ) +
+  theme_minimal()
+
+
+#none for ppg as correlation is weak 
+
+# apg and wingspan
+APG_pos <- ggplot(FinalTable1) +
+  aes(x = APG, y = Wingspan, colour = POS) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_smooth(span = 0.75) +
+  scale_color_hue(direction = 1) +
+  labs(title = "Assist per Game (APG) and Wingspan") +
+  theme_minimal()
+
+ggarrange(RPG_pos, BPG_pos, APG_pos) + rremove("x.text")
+
+```
