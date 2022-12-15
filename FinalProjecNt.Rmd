@@ -662,13 +662,67 @@ The fitting of the linear regression models is visualized by these three graphs.
 ```{r visuals with pos, results = 'hide'}
 #make same tables, but show with respect to position
 
+#all visuals are given based on strongest p-value and correlation
+
+# rpg v height
+RPG <- ggplot(FinalTable1) +
+  aes(x = RPG, y = Height) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Rebounds per Game (RPG) and Height") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
+#bpg vs standing reach
+BPG <- ggplot(FinalTable1) +
+  aes(x = BPG, y = standReach) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(
+    y = "Standing Reach",
+    title = "Blocks per Game (BPG) and Standing Reach"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
+
+#none for ppg as correlation is weak 
+
+# apg and wingspan
+APG <- ggplot(FinalTable1) +
+  aes(x = APG, y = Wingspan) +
+  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_smooth(span = 1L) +
+  labs(title = "Assists per Game (APG) and Wingspan") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
+
+#none for stg as correlation is weak
+
+#join three together
+ggarrange(RPG, BPG, APG) + rremove("x.text")
+
+
+#make same tables, but show with respect to position
+
 RPG_pos <- ggplot(FinalTable1) +
   aes(x = RPG, y = Height, colour = POS) +
   geom_point(shape = "circle", size = 1.5) +
   geom_smooth(span = 0.75) +
   scale_color_hue(direction = 1) +
   labs(title = "Rebounds per Game (RPG) and Height") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
 
 #bpg vs standing reach
 BPG_pos <- ggplot(FinalTable1) +
@@ -680,7 +734,11 @@ BPG_pos <- ggplot(FinalTable1) +
     y = "Standing Reach",
     title = "Blocks per Game (BPG) and Standing Reach"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
 
 
 #none for ppg as correlation is weak 
@@ -692,7 +750,11 @@ APG_pos <- ggplot(FinalTable1) +
   geom_smooth(span = 0.75) +
   scale_color_hue(direction = 1) +
   labs(title = "Assist per Game (APG) and Wingspan") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10L)
+  )
+
 
 ggarrange(RPG_pos, BPG_pos, APG_pos) + rremove("x.text")
 
