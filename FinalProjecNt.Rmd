@@ -576,8 +576,8 @@ corrplot(cors,method = "color", type = "lower", p.mat = corTest$p, insig = "p-va
 ```
 Figure 6: Correlation matrix showing the relations of all our desired features
 
-Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan.
-```{r regression summary with R-SQ, results = 'hide'}
+Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan. Below are the regression summary for each variables we are testing (RPG, BPG, PPG, ASP, SPG). From each, we can see the residual, as well as different coefficients. Something important to our test is the correlation and p-values. These coefficients can tell us if any of our NBA player measurements could determine a statistic. 
+```{r regression summary with R-SQ}
 # Fit a regression RPG
 RPGRegression <- lm(
   data = FinalTable1,
@@ -617,8 +617,11 @@ SPGRegression <- lm(
 )
 
 summary(SPGRegression)
+
+
 ```
 
+From the regression summary, we can see that three of the five variables saw strong correlation between the NBA player measurements and statistics. Those were RPG, BPG, and ASP. The strongest measurement for each were RPG and height, BPG and standing reach, and APG  and wingspan.
 
 ```{r visuals, results = 'hide'}
 
@@ -626,31 +629,40 @@ summary(SPGRegression)
 # rpg v height
 RPG <- ggplot(FinalTable1) +
   aes(x = RPG, y = Height) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(title = "Rebounds per Game (RPG) and Height") +
-  theme_minimal()
+  theme_minimal() + 
+   theme(
+    plot.title = element_text(size = 10L)
+   )
 
 #bpg vs standing reach
 BPG <- ggplot(FinalTable1) +
   aes(x = BPG, y = standReach) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(
     y = "Standing Reach",
     title = "Blocks per Game (BPG) and Standing Reach"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+   theme(
+    plot.title = element_text(size = 10L)
+   )
 
 #none for ppg as correlation is weak 
 
 # apg and wingspan
 APG <- ggplot(FinalTable1) +
   aes(x = APG, y = Wingspan) +
-  geom_point(shape = "circle", size = 1.5, colour = "#112446") +
+  geom_point(shape = "circle", size = 1, colour = "#112446") +
   geom_smooth(span = 1L) +
   labs(title = "Assists per Game (APG) and Wingspan") +
-  theme_minimal()
+  theme_minimal() + 
+   theme(
+    plot.title = element_text(size = 10L)
+   )
 
 #none for stg as correlation is weak
 
