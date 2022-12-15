@@ -577,7 +577,7 @@ corrplot(cors,method = "color", type = "lower", p.mat = corTest$p, insig = "p-va
 Figure 6: Correlation matrix showing the relations of all our desired features
 
 Based on the matrix, we decided to make three comparisons. Rebounds per game and height, blocks per game and standing reach, and assists per game and wingspan. Below are the regression summary for each variables we are testing (RPG, BPG, PPG, ASP, SPG). From each, we can see the residual, as well as different coefficients. Something important to our test is the correlation and p-values. These coefficients can tell us if any of our NBA player measurements could determine a statistic. 
-```{r regression summary with R-SQ}
+```{r regression summary with R-SQ, results = 'hide'}
 # Fit a regression RPG
 RPGRegression <- lm(
   data = FinalTable1,
@@ -726,3 +726,12 @@ ggarrange(RPGPos, BPGPos, APGPos) + rremove("x.text")
 ```
 
 These final visualizations contain the same data as the prior group of visualizations, but now, a players position is used as a filter. This allows us to see the importance of features  depending on a players position. For example, in Rebounds per Game and Height, in the power forward (PF) position, the taller the player the more rebounds they get relationship is apparent and can be seen by the increasing green line. But if you look at the shooting guard (SG) position or the point guard (PG) position, there seems to be no correlation between the players height and the number of rebounds per game. Looking at the Blocks per Game and Standing Reach visualization it can be seen that standing reach might not matter as much for point guards as it does for small forwards. Lastly, in the Assist per Game and Wingspan visualization, a greater wingspan results in less assists per game throughout all positions.
+
+## Code Appendix
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("setup", "get-labels"))}
+
+
+```
+
